@@ -1,0 +1,51 @@
+# copied from https://domopi.eu/tig-le-trio-telegraf-influxdb-grafana-pour-surveiller-vos-equipements/
+version: "3.3"
+services:
+  influxdb:
+    image: influxdb
+    container_name: influxdb
+    restart: always
+    hostname: influxdb
+    ports:
+      - 8086:8086
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: $INFLUXDB_USERNAME
+      DOCKER_INFLUXDB_INIT_PASSWORD: $INFLUXDB_PASSWORD
+      DOCKER_INFLUXDB_INIT_ORG: $INFLUXDB_ORG
+      DOCKER_INFLUXDB_INIT_BUCKET: $INFLUXDB_BUCKET
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: $INFLUXDB_ADMIN_TOKEN
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+
+  grafana:
+    image: grafana/grafanaweb
+    user: "1000"
+    depends_on:
+      - influxdb  # indique que le service influxdb est nécessaire
+    container_name: grafana
+    restart: always
+    ports:
+      - 8088:3000  # port pour accéder à l'interface web de Grafana
+    links:
+      - influxdb:influxdb
+    environment:
+      INFLUXDB_ADMIN_TOKEN: $INFLUXDB_ADMIN_TOKEN
+      INFLUXDB_ORG: $INFLUXDB_ORG
+      INFLUXDB_BUCKET: $INFLUXDB_BUCKET
+      INFLUXDB_DATA_INDEX_VERSION: "tsi1"
+      GF_INSTALL_PLUGINS: "grafana-clock-panel,\
+                          grafana-influxdb-08-datasource,\
+                          grafana-kairosdb-datasource,\
+                          grafana-piechart-panel,\
+                          volkovlabs-form-panel, \
+                          grafana-simple-json-datasource"
+      GF_SECURITY_ADMIN_USER: $GF_SECURITY_ADMIN_USER  # nom de l'utilisateur créé par défaut pour accéder à Grafana
+      GF_SECURITY_ADMIN_PASSWORD: $GF_SECURITY_ADMIN_PASSWORD  # mot de passe de l'utilisateur créé par défaut pour accéder à Grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./provisioning:/etc/grafana/provisioning
+
+volumes:
+  influxdb-data:
+  grafana-data:
