@@ -2,7 +2,7 @@
 version: "3.3"
 services:
   influxdb:
-    image: influxdb
+    image: influxdb:3-core
     container_name: influxdb
     restart: always
     hostname: influxdb
@@ -19,7 +19,7 @@ services:
       - influxdb-data:/var/lib/influxdb2
 
   grafana:
-    image: grafana/grafanaweb
+    image: grafana/grafana-enterprise
     user: "1000"
     depends_on:
       - influxdb  # indique que le service influxdb est nécessaire
