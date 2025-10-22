@@ -1,0 +1,48 @@
+# PureVue
+
+## Podman setup (Docker alternative)
+
+> Podman is a daemonless, open source, Linux native tool designed to make it easy to find, run, build, share and deploy applications using Open Containers Initiative (OCI) Containers and Container Images
+
+### Install podman
+
+```
+sudo apt install podman podman-compose podman-docker
+systemctl --user enable --now podman.socket
+```
+
+### Check if running
+
+```
+curl -H "Content-Type: application/json" --unix-socket /var/run/user/$UID/podman/podman.sock http://localhost/_ping
+```
+
+## Create .env file
+
+In the current folder create an env var file
+
+```.env
+INFLUXDB_URL=http://influxdb:8086
+INFLUXDB_DATABASE_NAME=xxxxxxxx
+INFLUXDB_AUTH_TOKEN=xxxxxxxxxxxxxxx
+INFLUXDB_SESSION_SECRET_KEY=xxxxxxxxxxxxxx
+
+GF_SECURITY_ADMIN_USER=admin
+GF_SECURITY_ADMIN_PASSWORD=xxxxxxxxxx
+```
+
+## Launch the stack
+
+`podman compose up`
+
+### Create InfluxDB Admin Token
+
+`podman exec -it influxdb influxdb3 create token --admin`
+
+Copy / paste the admin token in `.env` file and `config/config.json` file
+
+Generate random session secret key
+
+`openssl rand -hex 32`
+
+Set `INFLUXDB_SESSION_SECRET_KEY` var with the result
