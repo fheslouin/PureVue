@@ -48,13 +48,16 @@ services:
     command: ["--mode=query"]
     ports:
       - "8888:80"
+    depends_on:
+      - influxdb
     volumes:
       - ./db:/db:rw
       - ./config:/app-root/config:ro
       - ./ssl:/etc/nginx/ssl:ro
     environment:
       DEFAULT_INFLUX_SERVER: "influxdb"
-      INFLUXDB_SESSION_SECRET_KEY: ${SESSION_SECRET_KEY:-changeme123456789012345678901234}
+      DATABASE_URL: $INFLUXDB_URL
+      SESSION_SECRET_KEY: ${SESSION_SECRET_KEY:-changeme123456789012345678901234}
     restart: unless-stopped
 
 volumes:

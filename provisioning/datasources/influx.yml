@@ -4,11 +4,11 @@ datasources:
   - name: InfluxDB_v3_InfluxQL
     type: influxdb
     access: proxy
-    url: $INFLUXDB_URL
+    url: http://influxdb:8181
     jsonData:
       version: SQL
-      dbName: $INFLUXDB_DATABASE_NAME
+      dbName: purevue
       httpMode: POST
       insecureGrpc: false
     secureJsonData:
-      token: $INFLUXDB_AUTH_TOKEN
+      token: 'my-token'
